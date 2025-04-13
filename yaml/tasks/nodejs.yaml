@@ -1,0 +1,25 @@
+- name: Installing nodejs
+  ansible.builtin.shell: |
+      curl -fsSL https://fnm.vercel.app/install |
+          bash -s -- --skip-shell --install-dir {{ DATA_DIR }}/bin
+
+      export FNM_DIR="$HOME/.node"
+      export PATH="{{ DATA_DIR }}/bin:$PATH"
+
+      fnm install --lts
+  tags: nodejs
+
+- name: Configuring nodejs environment
+  ansible.builtin.blockinfile:
+      path: '{{ HOME_DIR }}/.zshrc'
+      prepend_newline: true
+      marker: '# {mark} nodejs'
+      block: |
+          export NPM_CONFIG_CACHE=$HOME/.node
+          export NPM_CONFIG_PREFIX=$HOME/.node
+          if command -v fnm &>/dev/null; then
+             eval "$(fnm env --shell zsh)"
+          fi
+          export FNM_DIR=$HOME/.node
+  loop: [.zshrc, .bashrc]
+  tags: nodejs

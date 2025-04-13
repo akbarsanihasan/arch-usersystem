@@ -1,0 +1,81 @@
+- name: Installing waybar dependencies
+  become: true
+  community.general.pacman:
+      update_cache: true
+      state: present
+      name:
+          - catch2
+          - wayland-protocols
+          - python-setuptools
+          - glib2-devel
+          - gtkmm3
+          - playerctl
+          - brightnessctl
+          - upower
+          - libjsoncpp.so
+          - libsigc++
+          - fmt
+          - libjack.so
+          - wayland
+          - libdate-tz.so
+          - libspdlog.so
+          - gtk-layer-shell
+          - libupower-glib.so
+          - libevdev
+          - libinput
+          - libpulse
+          - libnl
+          - libappindicator-gtk3
+          - libdbusmenu-gtk3
+          - libmpdclient
+          - libsndio.so
+          - libxkbcommon
+          - libwireplumber
+  tags:
+      - waybar
+      - hyprwm
+
+- name: Downloading waybar source
+  ansible.builtin.git:
+      repo: 'https://github.com/Alexays/Waybar'
+      dest: '{{ DOTFILES_CACHE_DIR }}/waybar'
+      version: '{{ WAYBAR_VERSION }}'
+      depth: 1
+      recursive: true
+      update: false
+  tags:
+      - waybar
+      - hyprwm
+
+- name: Compiling waybar
+  ansible.builtin.shell: |
+      meson setup build --prefix=/usr/local \
+            -Dsystemd=enabled \
+            -Dcava=disabled \
+            -Dtests=disabled \
+
+      meson compile -C build
+  args:
+      chdir: '{{ DOTFILES_CACHE_DIR }}/waybar'
+  tags:
+      - waybar
+      - hyprwm
+
+- name: Installing waybar
+  become: true
+  ansible.builtin.shell: meson install -C build
+  args:
+      chdir: '{{ DOTFILES_CACHE_DIR }}/waybar'
+  tags:
+      - waybar
+      - hyprwm
+
+- name: Enabling waybar service using systemd
+  ansible.builtin.systemd_service:
+      name: waybar
+      scope: user
+      enabled: true
+      daemon_reload: true
+  tags:
+      - waybar
+      - hyprwm

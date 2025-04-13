@@ -1,0 +1,34 @@
+- name: Downloading php for linux
+  ansible.builtin.get_url:
+      url: 'https://download.herdphp.com/herd-lite/{{ item.url }}'
+      dest: '{{ DOTFILES_CACHE_DIR }}/{{ item.dest }}'
+  loop:
+      - {url: linux/x64/8.4/php, dest: php}
+      - {url: composer, dest: composer}
+  tags: php
+
+- name: Creating php installation location
+  ansible.builtin.file:
+      dest: '{{ HOME_DIR }}/.php/bin'
+      state: directory
+  tags: php
+
+- name: Installing php
+  ansible.builtin.copy:
+      src: '{{ DOTFILES_CACHE_DIR }}/{{ item }}'
+      dest: '{{ HOME_DIR }}/.php/bin'
+      mode: 0777
+  loop: [php, composer]
+  tags: php
+
+- name: Configuring php environment
+  ansible.builtin.blockinfile:
+      path: '{{ HOME_DIR }}/.zshrc'
+      prepend_newline: true
+      marker: '# {mark} php'
+      block: |
+          export PATH="$HOME/.php/bin:$PATH"
+          export COMPOSER_HOME="$HOME/.php"
+          export PHP_CS_FIXER_IGNORE_ENV=true
+  loop: [.zshrc, .bashrc]
+  tags: php

@@ -1,0 +1,71 @@
+- name: Installing pipewire dependencies
+  become: true
+  community.general.pacman:
+      update_cache: true
+      state: present
+      name:
+          - pipewire
+          - pipewire-audio
+          - pipewire-pulse
+          - pipewire-alsa
+          - pipewire-jack
+          - wireplumber
+          - rtkit
+          - webkit2gtk
+  tags:
+      - pipewire
+      - hyprwm
+
+- name: Downloading Noise supressor for voice
+  ansible.builtin.git:
+      repo: https://github.com/werman/noise-suppression-for-voice.git
+      dest: '{{ DOTFILES_CACHE_DIR }}/noise_supressor'
+      version: '{{ NOISE_SUPRESSOR_VERSION }}'
+      depth: 1
+      recursive: true
+      update: false
+  tags:
+      - pipewire
+      - hyprwm
+
+- name: Compiling Noise supressor for voice
+  ansible.builtin.shell: |
+      cmake --no-warn-unused-cli \
+            -S. \
+            -Bbuild \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH=/usr/local
+
+      cmake --build ./build \
+            --config Release \
+            --target all \
+            -j$(nproc 2>/dev/null || getconf _NPROCESSORS_CONF)
+  args:
+      chdir: '{{ DOTFILES_CACHE_DIR }}/noise_supressor'
+  tags:
+      - pipewire
+      - hyprwm
+
+- name: Installing Noise supressor for voice
+  become: true
+  ansible.builtin.shell: cmake --install ./build
+  args:
+      chdir: '{{ DOTFILES_CACHE_DIR }}/noise_supressor'
+  tags:
+      - pipewire
+      - hyprwm
+
+- name: Enabling pipewire using systemd
+  ansible.builtin.systemd_service:
+      name: '{{ item.name }}'
+      scope: '{{ item.scope }}'
+      enabled: '{{ item.enabled }}'
+      state: '{{ item.state }}'
+      daemon_reload: true
+  loop:
+      - {name: pipewire, scope: user, enabled: true, state: started}
+      - {name: wireplumber, scope: user, enabled: true, state: started}
+  tags:
+      - pipewire
+      - hyprwm

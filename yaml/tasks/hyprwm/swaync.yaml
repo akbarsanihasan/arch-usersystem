@@ -1,0 +1,65 @@
+- name: Installing swaync dependencies
+  become: true
+  community.general.pacman:
+      update_cache: true
+      state: present
+      name:
+          - vala
+          - sassc
+          - scdoc
+          - gtk3
+          - gtk-layer-shell
+          - dbus
+          - glib2
+          - gobject-introspection
+          - libgee
+          - json-glib
+          - libhandy
+          - libpulse
+          - gvfs
+          - libnotify
+          - granite
+  tags:
+      - swaync
+      - hyprwm
+
+- name: Downloading swaync source
+  ansible.builtin.git:
+      repo: 'https://github.com/ErikReider/SwayNotificationCenter.git'
+      dest: '{{ DOTFILES_CACHE_DIR }}/swaync'
+      version: '{{ SWAYNC_VERSION }}'
+      depth: 1
+      recursive: true
+      update: false
+  tags:
+      - swaync
+      - hyprwm
+
+- name: Compiling swaync
+  ansible.builtin.shell: |
+      meson setup build --prefix=/usr/local
+      meson compile -C build
+  args:
+      chdir: '{{ DOTFILES_CACHE_DIR }}/swaync'
+  tags:
+      - swaync
+      - hyprwm
+
+- name: Installing swaync
+  become: true
+  ansible.builtin.shell: meson install -C build
+  args:
+      chdir: '{{ DOTFILES_CACHE_DIR }}/swaync'
+  tags:
+      - swaync
+      - hyprwm
+
+- name: Enabling swaync service using systemd
+  ansible.builtin.systemd_service:
+      name: swaync
+      scope: user
+      enabled: true
+      daemon_reload: true
+  tags:
+      - swaync
+      - hyprwm

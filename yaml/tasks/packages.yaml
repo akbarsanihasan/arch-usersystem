@@ -1,0 +1,56 @@
+- name: Installing common apps
+  become: true
+  community.general.pacman:
+      update_cache: true
+      state: present
+      name:
+          - kitty
+          - mpv
+          - android-file-transfer
+          - gparted
+  tags:
+      - apps
+      - common
+
+- name: Installing common packages
+  become: true
+  community.general.pacman:
+      update_cache: true
+      state: present
+      name:
+          - zsh
+          - tmux
+          - btop
+          - fastfetch
+          - bat
+          - eza
+          - fzf
+          - trash-cli
+          - less
+          - tldr
+          - man
+          - fd
+          - jq
+          - ripgrep
+          - awk
+  tags: common
+
+- name: Changing default shell to zsh
+  become: true
+  ansible.builtin.user:
+      shell: '/usr/bin/zsh'
+      name: '{{ ansible_user_id }}'
+  tags: common
+
+- name: Configuring shell environment
+  ansible.builtin.shell: |
+      zsh -c "source {{ HOME_DIR }}/.zshrc"
+
+      if command -v bat &>/dev/null;then
+          bat cache --build
+      fi
+
+      if command -v batcat &>/dev/null;then
+          batcat cache --build
+      fi
+  tags: common

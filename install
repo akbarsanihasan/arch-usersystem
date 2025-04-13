@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+. /etc/os-release
+
+ANSIBLE_VERSION='11.1.0'
+ANSIBLE_ARGS=(--ask-become)
+if [[ "$#" -gt 0 ]]; then
+    ANSIBLE_ARGS+=(--tags "build,directory")
+else
+    ANSIBLE_ARGS+=(--ask-vault-password)
+fi
+if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+    ANSIBLE_ARGS+=(--skip-tags "apps,hyprwm")
+fi
+if ! ls /sys/class/power_supply/BAT* &>/dev/null; then
+    ANSIBLE_ARGS+=(--skip-tags "tlp")
+fi
+
+if ! command -v git &>/dev/null; then
+    sudo pacman -S git --noconfirm
+fi
+
+if ! command -v python &>/dev/null; then
+    sudo pacman -S python --noconfirm
+fi
+
+if ! [[ -d ./.pip ]]; then
+    python -m venv .pip
+fi
+
+. ./.pip/bin/activate
+
+if ! command -v ansible >/dev/null; then
+    pip install ansible==$ANSIBLE_VERSION
+fi
+
+clear
+ansible-playbook local.yaml "${ANSIBLE_ARGS[@]}" "${@}"
+
+if [[ -d .git ]]; then
+    git remote remove origin &>/dev/null
+    git remote add origin git@github.com:akbarsanihasan/dotfiles.git &>/dev/null
+fi
