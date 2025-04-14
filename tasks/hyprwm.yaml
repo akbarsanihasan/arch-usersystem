@@ -56,13 +56,11 @@
 - name: Compiling rofi plugins
   ansible.builtin.shell: |
       autoreconf -i
-      ./configure --prefix=/usr/local
+      ./configure
       make
   loop: [rofi-calc, rofi-emoji]
   args:
       chdir: '{{ DOTFILES_CACHE_DIR }}/{{ item }}'
-  environment:
-      PKG_CONFIG_PATH: "/usr/local/lib/pkgconfig: {{ ansible_env.PKG_CONFIG_PATH | default('') }}"
   tags: hyprwm
 
 - name: Installing rofi plugins
