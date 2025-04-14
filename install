@@ -9,9 +9,6 @@ if [[ "$#" -gt 0 ]]; then
 else
     ANSIBLE_ARGS+=(--ask-vault-password)
 fi
-if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
-    ANSIBLE_ARGS+=(--skip-tags "apps,hyprwm")
-fi
 if ! ls /sys/class/power_supply/BAT* &>/dev/null; then
     ANSIBLE_ARGS+=(--skip-tags "tlp")
 fi

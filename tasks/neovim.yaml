@@ -7,22 +7,18 @@
           - gettext
           - luarocks
           - tree-sitter-cli
-  tags:
-      - neovim
-      - common
+  tags: neovim
 
-- name: Downloading Neovim source version {{ NEOVIM_VERSION }}
+- name: Downloading Neovim source
   ansible.builtin.git:
       repo: 'https://github.com/neovim/neovim'
       dest: '{{ DOTFILES_CACHE_DIR }}/neovim'
-      version: '{{ NEOVIM_VERSION }}'
+      version: stable
       depth: 1
       recursive: true
       update: false
       accept_hostkey: true
-  tags:
-      - neovim
-      - common
+  tags: neovim
 
 - name: Compiling Neovim
   ansible.builtin.shell: |
@@ -31,15 +27,11 @@
            -j$(nproc 2>/dev/null || getconf _NPROCESSORS_CONF)
   args:
       chdir: '{{ DOTFILES_CACHE_DIR }}/neovim'
-  tags:
-      - neovim
-      - common
+  tags: neovim
 
 - name: Installing Neovim
   become: true
   ansible.builtin.shell: make install
   args:
       chdir: '{{ DOTFILES_CACHE_DIR }}/neovim'
-  tags:
-      - neovim
-      - common
+  tags: neovim

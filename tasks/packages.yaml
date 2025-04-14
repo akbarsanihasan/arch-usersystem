@@ -1,4 +1,4 @@
-- name: Installing common apps
+- name: Installing common packages
   become: true
   community.general.pacman:
       update_cache: true
@@ -8,16 +8,7 @@
           - mpv
           - android-file-transfer
           - gparted
-  tags:
-      - apps
-      - common
 
-- name: Installing common packages
-  become: true
-  community.general.pacman:
-      update_cache: true
-      state: present
-      name:
           - zsh
           - tmux
           - btop

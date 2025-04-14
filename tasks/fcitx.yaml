@@ -10,9 +10,7 @@
           - fcitx5-mozc
           - fcitx5-hangul
           - fcitx5-configtool
-  tags:
-      - fcitx
-      - hyprwm
+  tags: fcitx
 
 - name: Downloading fcitx theme
   ansible.builtin.git:
@@ -21,14 +19,10 @@
       depth: 1
       recursive: true
       update: false
-  tags:
-      - fcitx
-      - hyprwm
+  tags: fcitx
 
 - name: Installing fcitx catppuccin theme
   ansible.builtin.copy:
       src: '{{ DOTFILES_CACHE_DIR }}/fcitx-theme/src/catppuccin-mocha-mauve'
       dest: '{{ DATA_DIR }}/share/fcitx5/themes/'
-  tags:
-      - fcitx
-      - hyprwm
+  tags: fcitx

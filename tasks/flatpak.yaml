@@ -4,9 +4,7 @@
       update_cache: true
       state: present
       name: flatpak
-  tags:
-      - flatpak
-      - hyprwm
+  tags: flatpak
 
 - name: Adding flatpak repository remote
   community.general.flatpak_remote:
@@ -14,9 +12,7 @@
       flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
       state: present
       method: user
-  tags:
-      - flatpak
-      - hyprwm
+  tags: flatpak
 
 - name: Installing app using flatpak
   community.general.flatpak:
@@ -28,9 +24,7 @@
       - com.github.tchx84.Flatseal
       - md.obsidian.Obsidian
       - org.chromium.Chromium
-  tags:
-      - flatpak
-      - hyprwm
+  tags: flatpak
 
 - name: Configuring flatpak
   ansible.builtin.shell: |
@@ -60,6 +54,4 @@
       flatpak override --user --env=QT_QPA_PLATFORM="wayland;xcb"
       flatpak override --user --env=ELECTRON_OZONE_PLATFORM_HINT=auto
       flatpak override --user --env=GTK_THEME="{{ GTK_THEME }}"
-  tags:
-      - flatpak
-      - hyprwm
+  tags: flatpak

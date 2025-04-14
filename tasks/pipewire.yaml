@@ -20,7 +20,7 @@
   ansible.builtin.git:
       repo: https://github.com/werman/noise-suppression-for-voice.git
       dest: '{{ DOTFILES_CACHE_DIR }}/noise_supressor'
-      version: '{{ NOISE_SUPRESSOR_VERSION }}'
+      version: v1.10
       depth: 1
       recursive: true
       update: false

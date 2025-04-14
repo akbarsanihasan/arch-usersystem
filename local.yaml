@@ -1,35 +1,66 @@
 - hosts: localhost
   gather_facts: true
-  vars_files:
-      - ./yaml/variables.yaml
-      - ./yaml/versions.yaml
+  vars:
+      USER: "{{ lookup('env', 'USER') }}"
+      USER_GITHUB: 'akbarsanihasan'
+      HOME_DIR: "{{ lookup('env', 'HOME') }}"
+      CONFIG_DIR: '{{ HOME_DIR }}/.config'
+      CACHE_DIR: '{{ HOME_DIR }}/.cache'
+      DATA_DIR: '{{ HOME_DIR }}/.local'
+      DOTFILES_CACHE_DIR: '{{ playbook_dir }}/__cache__'
+      GTK_THEME: 'Colloid-Purple-Dark-Compact-Catppuccin'
   pre_tasks:
-      - import_tasks: ./yaml/tasks/directory.yaml
-      - import_tasks: ./yaml/tasks/personal.yaml
-      - import_tasks: ./yaml/tasks/tools.yaml
+      - import_tasks: ./tasks/directory.yaml
+      - import_tasks: ./tasks/personal.yaml
+      - import_tasks: ./tasks/tools.yaml
   tasks:
-      - import_tasks: ./yaml/tasks/dotfiles.yaml
-      - import_tasks: ./yaml/tasks/nodejs.yaml
-      - import_tasks: ./yaml/tasks/php.yaml
-      - import_tasks: ./yaml/tasks/golang.yaml
-      - import_tasks: ./yaml/tasks/rust.yaml
-      - import_tasks: ./yaml/tasks/packages.yaml
-      - import_tasks: ./yaml/tasks/browser.yaml
-      - import_tasks: ./yaml/tasks/nerdfonts.yaml
-      - import_tasks: ./yaml/tasks/neovim.yaml
-      - import_tasks: ./yaml/tasks/git.yaml
-      - import_tasks: ./yaml/tasks/flameshot.yaml
+      - name: Preparing to install common dotfiles
+        ansible.builtin.include_tasks: ./tasks/dotfiles.yaml
+        vars:
+            dotfiles_name: common
+            dotfiles_path: common
+            dotfiles_tags: [dotfiles, common]
+        tags:
+            - common
+            - dotfiles
 
-      - import_tasks: ./yaml/tasks/hyprwm/pipewire.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/bluetooth.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/hyprland.git.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/uwsm.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/packages.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/flatpak.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/fcitx.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/udiskie.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/tlp.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/rofi.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/swaync.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/waybar.yaml
-      - import_tasks: ./yaml/tasks/hyprwm/theme.yaml
+      - name: Preparing to install hyprwm config
+        ansible.builtin.include_tasks: ./tasks/dotfiles.yaml
+        vars:
+            dotfiles_name: hyprwm
+            dotfiles_path: hyprwm
+            dotfiles_tags: [dotfiles, hyprwm]
+        tags:
+            - dotfiles
+            - hyprwm
+
+      - name: Installing wallpaper
+        ansible.builtin.file:
+            src: '{{ playbook_dir }}/dotfiles/.wallpapers/'
+            dest: '{{ HOME_DIR }}/.wallpapers'
+            state: link
+            force: true
+        tags:
+            - wallpaper
+            - hyprwm
+            - common
+
+      - import_tasks: ./tasks/nodejs.yaml
+      - import_tasks: ./tasks/php.yaml
+      - import_tasks: ./tasks/golang.yaml
+      - import_tasks: ./tasks/rust.yaml
+
+      - import_tasks: ./tasks/packages.yaml
+      - import_tasks: ./tasks/browser.yaml
+      - import_tasks: ./tasks/nerdfonts.yaml
+      - import_tasks: ./tasks/git.yaml
+      - import_tasks: ./tasks/neovim.yaml
+      - import_tasks: ./tasks/flameshot.yaml
+
+      - import_tasks: ./tasks/pipewire.yaml
+      - import_tasks: ./tasks/bluetooth.yaml
+      - import_tasks: ./tasks/hyprwm.yaml
+      - import_tasks: ./tasks/fcitx.yaml
+      - import_tasks: ./tasks/udiskie.yaml
+      - import_tasks: ./tasks/tlp.yaml
+      - import_tasks: ./tasks/flatpak.yaml

@@ -4,9 +4,7 @@
       update_cache: true
       state: present
       name: udiskie
-  tags:
-      - udiskie
-      - hyprwm
+  tags: udiskie
 
 - name: Configuring udiskie mountpoint
   become: true
@@ -27,9 +25,7 @@
             line: 'ENV{ID_FS_USAGE}=="filesystem|other|crypto", ENV{UDISKS_FILESYSTEM_SHARED}="1"',
             regexp: '^ENV{ID_FS_USAGE}==',
         }
-  tags:
-      - udiskie
-      - hyprwm
+  tags: udiskie
 
 - name: Configuring udiskie mount options
   become: true
@@ -47,6 +43,4 @@
             value: 'uid=$UID,gid=$GID,iocharset=utf8,errors=remount-ro,sync',
         }
       - {option: ntfs:ntfs3_defaults, value: 'uid=$UID,gid=$GID'}
-  tags:
-      - udiskie
-      - hyprwm
+  tags: udiskie

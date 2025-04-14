@@ -1,4 +1,4 @@
-- name: Scanning basepath {{ dotfiles_name }} config dir
+- name: Scanning base {{ dotfiles_name }} dotfile folder
   register: base_dir
   ansible.builtin.find:
       paths: '{{ playbook_dir }}/dotfiles/{{ dotfiles_path }}'
@@ -7,7 +7,7 @@
       hidden: true
   tags: '{{ dotfiles_tags }}'
 
-- name: Scanning {{ dotfiles_name }} config dir
+- name: Scanning {{ dotfiles_name }} dotfile folder
   register: config_dir
   ansible.builtin.find:
       paths: '{{ item.path }}'
