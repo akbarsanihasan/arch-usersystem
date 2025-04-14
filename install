@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+clear
+
 . /etc/os-release
 
 ANSIBLE_VERSION='11.1.0'
@@ -16,6 +18,24 @@ fi
 if ! [[ -f /etc/ld.so.conf.d/libc.conf ]]; then
     echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/libc.conf &>/dev/null
     sudo ldconfig
+fi
+
+if ! [[ -f /usr/lib/systemd/system/pacman-update.service ]]; then
+    echo -e "[Unit]" | sudo tee /usr/lib/systemd/system/pacman-update.service
+    echo -e "Description=Update pacman database on boot" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+    echo -e "After=network-online.target" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+    echo -e "Wants=network-online.target\n" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+
+    echo -e "[Service]" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+    echo -e "Type=simple" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+    echo -e "ExecStart=/usr/bin/pacman -Sy" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+    echo -e "StandardOutput=journal\n" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+
+    echo -e "[Install]" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+    echo -e "WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now pacman-update
 fi
 
 if ! command -v git &>/dev/null; then
