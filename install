@@ -48,5 +48,5 @@ ansible-playbook local.yaml "${ANSIBLE_ARGS[@]}" "${@}"
 
 if [[ -d .git ]]; then
     git remote remove origin &>/dev/null
-    git remote add origin git@github.com:akbarsanihasan/dotfiles.git &>/dev/null
+    git remote add origin git@github.com:akbarsanihasan/arch-usersystem.git &>/dev/null
 fi
