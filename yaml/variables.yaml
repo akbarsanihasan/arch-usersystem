@@ -4,5 +4,5 @@ HOME_DIR: "{{ lookup('env', 'HOME') }}"
 CONFIG_DIR: '{{ HOME_DIR }}/.config'
 CACHE_DIR: '{{ HOME_DIR }}/.cache'
 DATA_DIR: '{{ HOME_DIR }}/.local'
-DOTFILES_CACHE_DIR: '{{ playbook_dir }}/.cache'
+DOTFILES_CACHE_DIR: '{{ playbook_dir }}/__cache__'
 GTK_THEME: 'Colloid-Purple-Dark-Compact-Catppuccin'

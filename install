@@ -16,6 +16,11 @@ if ! ls /sys/class/power_supply/BAT* &>/dev/null; then
     ANSIBLE_ARGS+=(--skip-tags "tlp")
 fi
 
+if ! [[ -f /etc/ld.so.conf.d/libc.conf ]]; then
+    echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/libc.conf &>/dev/null
+    sudo ldconfig
+fi
+
 if ! command -v git &>/dev/null; then
     sudo pacman -S git --noconfirm
 fi

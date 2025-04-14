@@ -27,6 +27,7 @@
 - name: Compiling uwsm
   ansible.builtin.shell: |
       meson setup build --prefix=/usr/local \
+                  -Dpython-bin=/usr/bin/python \
                   -Duuctl=enabled \
                   -Dfumon=enabled \
                   -Duwsm-app=enabled
@@ -34,6 +35,10 @@
       meson compile -C build
   args:
       chdir: '{{ DOTFILES_CACHE_DIR }}/uwsm'
+  environment:
+      PATH: '/usr/bin:/bin'
+      PYTHONPATH: ''
+      VIRTUAL_ENV: ''
   tags:
       - uwsm
       - hyprwm

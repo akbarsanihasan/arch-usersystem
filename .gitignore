@@ -1,4 +1,4 @@
 .pip
-.cache
+__cache__
 .dotfiles
 .personal
