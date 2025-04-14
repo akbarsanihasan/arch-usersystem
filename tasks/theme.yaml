@@ -1,0 +1,78 @@
+- name: Installing hyprland packages
+  become: true
+  community.general.pacman:
+      update_cache: true
+      state: present
+      name:
+          - gtk3
+          - gtk4
+          - qt5ct
+          - qt6ct
+          - kvantum
+          - kvantum-qt5
+          - nwg-look
+          - sassc
+          - adwaita-cursors
+          - inter-font
+          - noto-fonts-emoji
+          - noto-fonts-cjk
+          - otf-font-awesome
+          - ttf-dejavu
+          - ttf-liberation
+  tags: theme
+
+- name: Downloading hyprwm additional package source
+  ansible.builtin.git:
+      repo: 'https://github.com/{{ item.repo }}.git'
+      dest: '{{ DOTFILES_CACHE_DIR }}/{{ item.dest }}'
+      version: '{{ item.version }}'
+      depth: 1
+      recursive: true
+      update: false
+  loop:
+      - {
+            repo: 'vinceliuice/Colloid-gtk-theme',
+            dest: 'gtk-theme',
+            version: 2024-11-16,
+        }
+      - {
+            repo: 'PapirusDevelopmentTeam/papirus-icon-theme',
+            dest: 'icon-pack',
+            version: 20250201,
+        }
+  tags: theme
+
+- name: Creating theme directory
+  ansible.builtin.file:
+      dest: '{{ item }}'
+      state: directory
+  loop:
+      - '{{ DATA_DIR }}/share/themes'
+      - '{{ DATA_DIR }}/share/icons'
+      - '{{ CONFIG_DIR }}/gtk-4.0'
+      - '{{ CONFIG_DIR }}/gtk-3.0'
+  tags: theme
+
+- name: Installing gtk theme and icons
+  ansible.builtin.shell: |
+      cd {{ DOTFILES_CACHE_DIR }}/icon-pack
+      make install PREFIX={{ DATA_DIR }}
+
+      cd {{ DOTFILES_CACHE_DIR }}/gtk-theme
+      ./install.sh --dest {{ DATA_DIR }}/share/themes \
+                   --theme purple \
+                   --color dark \
+                   --size compact \
+                   --libadwaita \
+                   --tweaks catppuccin black
+  tags: theme
+
+- name: Applying gtk theme
+  ansible.builtin.shell: |
+      gsettings set org.gnome.desktop.interface gtk-theme '{{ GTK_THEME }}'
+      gsettings set org.gnome.desktop.wm.preferences theme '{{ GTK_THEME }}'
+      gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+      gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+      gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita'
+      gsettings set org.gnome.desktop.interface font-name 'Inter Display Semi-Bold 14'
+  tags: theme

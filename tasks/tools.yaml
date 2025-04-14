@@ -4,7 +4,6 @@
       update_cache: true
       state: present
       name:
-          - openssh
           - base-devel
           - meson
           - ninja

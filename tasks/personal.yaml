@@ -1,6 +1,6 @@
 - name: Copying ssh keys
   ansible.builtin.copy:
-      src: '{{ playbook_dir }}/ssh/'
+      src: '{{ playbook_dir }}/.ssh/'
       dest: '{{ HOME_DIR }}/.ssh'
       mode: 0600
   tags:
@@ -30,5 +30,4 @@
       - {repo: Notes, dest: '{{ HOME_DIR }}/Documents/Notes'}
       - {repo: dotfiles, dest: '{{ playbook_dir }}/dotfiles'}
       - {repo: Nvimrc, dest: '{{ playbook_dir }}/dotfiles/common/.config/nvim'}
-  tags:
-      - personal
+  tags: personal

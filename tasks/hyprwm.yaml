@@ -1,4 +1,4 @@
-- name: Installing hyprland dependencies
+- name: Installing hyprland packages
   become: true
   community.general.pacman:
       update_cache: true
@@ -38,22 +38,6 @@
           - libqalculate
           - wl-clipboard
           - cliphist
-
-          - gtk3
-          - gtk4
-          - qt5ct
-          - qt6ct
-          - kvantum
-          - kvantum-qt5
-          - nwg-look
-          - sassc
-          - adwaita-cursors
-          - inter-font
-          - noto-fonts-emoji
-          - noto-fonts-cjk
-          - otf-font-awesome
-          - ttf-dejavu
-          - ttf-liberation
   tags: hyprwm
 
 - name: Downloading hyprwm additional package source
@@ -66,30 +50,20 @@
       update: false
   loop:
       - {repo: 'svenstaro/rofi-calc', dest: 'rofi-calc', version: v2.3.0}
-      - {repo: 'mange/rofi-emoji', dest: 'rofi-emoji', version: v4.10}
-      - {
-            repo: 'vinceliuice/Colloid-gtk-theme',
-            dest: 'gtk-theme',
-            version: 2024-11-16,
-        }
-      - {
-            repo: 'PapirusDevelopmentTeam/papirus-icon-theme',
-            dest: 'icon-pack',
-            version: 20250201,
-        }
+      - {repo: 'mange/rofi-emoji', dest: 'rofi-emoji', version: v4.1.0}
   tags: hyprwm
 
 - name: Compiling rofi plugins
   ansible.builtin.shell: |
       autoreconf -i
-      ./configure --prefix=/usr
+      ./configure --prefix=/usr/local
       make
   loop: [rofi-calc, rofi-emoji]
   args:
       chdir: '{{ DOTFILES_CACHE_DIR }}/{{ item }}'
-  tags:
-      - rofi
-      - hyprwm
+  environment:
+      PKG_CONFIG_PATH: "/usr/local/lib/pkgconfig: {{ ansible_env.PKG_CONFIG_PATH | default('') }}"
+  tags: hyprwm
 
 - name: Installing rofi plugins
   become: true
@@ -99,66 +73,6 @@
   loop: [rofi-calc, rofi-emoji]
   args:
       chdir: '{{ DOTFILES_CACHE_DIR }}/{{ item }}'
-  tags:
-      - rofi
-      - hyprwm
-
-- name: Creating theme directory
-  ansible.builtin.file:
-      dest: '{{ item }}'
-      state: directory
-  loop:
-      - '{{ DATA_DIR }}/share/themes'
-      - '{{ DATA_DIR }}/share/icons'
-      - '{{ CONFIG_DIR }}/gtk-4.0'
-      - '{{ CONFIG_DIR }}/gtk-3.0'
-  tags:
-      - theme
-      - hyprwm
-
-- name: Installing gtk theme and icons
-  ansible.builtin.shell: |
-      cd {{ DOTFILES_CACHE_DIR }}/gtk-theme
-      make install PREFIX={{ DATA_DIR }} 
-
-      cd {{ DOTFILES_CACHE_DIR }}/icon-pack
-      ./install.sh --dest {{ DATA_DIR }}/share/themes \
-                   --theme purple \
-                   --color dark \
-                   --size compact \
-                   --libadwaita \
-                   --tweaks catppuccin black
-  args:
-      chdir: ''
-  tags:
-      - theme
-      - hyprwm
-
-- name: Applying gtk theme
-  ansible.builtin.shell: |
-      gsettings set org.gnome.desktop.interface gtk-theme '{{ GTK_THEME }}'
-      gsettings set org.gnome.desktop.wm.preferences theme '{{ GTK_THEME }}'
-      gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-      gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
-      gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita'
-      gsettings set org.gnome.desktop.interface font-name 'Inter Display Semi-Bold 14'
-  tags: hyprwm
-
-- name: Creating xdg-user-dirs bookmark
-  ansible.builtin.lineinfile:
-      path: '{{ CONFIG_DIR }}/gtk-3.0/bookmarks'
-      line: 'file://{{ HOME_DIR }}/{{ item }}'
-      regexp: 'file://{{ HOME_DIR }}/{{ item }}'
-      state: present
-      create: true
-  loop:
-      - Documents
-      - Downloads
-      - Music
-      - Pictures
-      - Public
-      - Templates
-      - Videos
   tags: hyprwm
 
 - name: Enabling hyprwm application service using systemd

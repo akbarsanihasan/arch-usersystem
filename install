@@ -7,7 +7,7 @@ clear
 ANSIBLE_VERSION='11.1.0'
 ANSIBLE_ARGS=(--ask-become)
 if [[ "$#" -gt 0 ]]; then
-    ANSIBLE_ARGS+=(--tags "build,directory")
+    ANSIBLE_ARGS+=(--tags "tools,directory")
 else
     ANSIBLE_ARGS+=(--ask-vault-password)
 fi
@@ -35,7 +35,7 @@ if ! [[ -f /usr/lib/systemd/system/pacman-update.service ]]; then
     echo -e "WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
 
     sudo systemctl daemon-reload
-    sudo systemctl enable --now pacman-update
+    sudo systemctl enable pacman-update
 fi
 
 if ! command -v git &>/dev/null; then

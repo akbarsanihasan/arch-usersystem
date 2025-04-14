@@ -1,4 +1,4 @@
-- name: Installing common packages
+- name: Installing packages
   become: true
   community.general.pacman:
       update_cache: true
@@ -7,7 +7,6 @@
           - kitty
           - mpv
           - android-file-transfer
-          - gparted
 
           - zsh
           - tmux
@@ -24,14 +23,14 @@
           - jq
           - ripgrep
           - awk
-  tags: common
+  tags: packages
 
 - name: Changing default shell to zsh
   become: true
   ansible.builtin.user:
       shell: '/usr/bin/zsh'
       name: '{{ ansible_user_id }}'
-  tags: common
+  tags: packages
 
 - name: Configuring shell environment
   ansible.builtin.shell: |
@@ -44,4 +43,21 @@
       if command -v batcat &>/dev/null;then
           batcat cache --build
       fi
-  tags: common
+  tags: packages
+
+- name: Creating xdg-user-dirs bookmark
+  ansible.builtin.lineinfile:
+      path: '{{ CONFIG_DIR }}/gtk-3.0/bookmarks'
+      line: 'file://{{ HOME_DIR }}/{{ item }}'
+      regexp: 'file://{{ HOME_DIR }}/{{ item }}'
+      state: present
+      create: true
+  loop:
+      - Documents
+      - Downloads
+      - Music
+      - Pictures
+      - Public
+      - Templates
+      - Videos
+  tags: packages

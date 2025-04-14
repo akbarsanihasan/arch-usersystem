@@ -13,6 +13,4 @@
 
       ./install.sh -U
       ./install.sh -Up
-  tags:
-      - nerdfonts
-      - common
+  tags: nerdfonts

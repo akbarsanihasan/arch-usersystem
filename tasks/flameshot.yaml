@@ -18,7 +18,7 @@
   ansible.builtin.git:
       repo: https://github.com/flameshot-org/flameshot.git
       dest: '{{ DOTFILES_CACHE_DIR }}/flameshot'
-      # version: '{{ FLAMESHOT_VERSION }}'
+      version: master
       depth: 1
       recursive: true
       update: false
