@@ -25,6 +25,10 @@ if ! command -v git &>/dev/null; then
     sudo pacman -S git --noconfirm
 fi
 
+if ! command -v ssh &>/dev/null; then
+    sudo pacman -S openssh --noconfirm
+fi
+
 if ! command -v python &>/dev/null; then
     sudo pacman -S python --noconfirm
 fi

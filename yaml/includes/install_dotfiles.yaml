@@ -1,7 +1,7 @@
 - name: Scanning basepath {{ dotfiles_name }} config dir
   register: base_dir
   ansible.builtin.find:
-      paths: '{{ playbook_dir }}/.dotfiles/{{ dotfiles_path }}'
+      paths: '{{ playbook_dir }}/dotfiles/{{ dotfiles_path }}'
       file_type: directory
       excludes: '*tasks'
       hidden: true
@@ -28,9 +28,9 @@
       state: absent
   loop: >-
       {{
-        lookup('fileglob', '{{ playbook_dir }}/.dotfiles/{{ dotfiles_path }}/*', wantlist=True)
+        lookup('fileglob', '{{ playbook_dir }}/dotfiles/{{ dotfiles_path }}/*', wantlist=True)
         +
-        lookup('fileglob', '{{ playbook_dir }}/.dotfiles/{{ dotfiles_path }}/.*', wantlist=True)
+        lookup('fileglob', '{{ playbook_dir }}/dotfiles/{{ dotfiles_path }}/.*', wantlist=True)
         +
         q('subelements', config_dir.results, 'files', {'skip_missing': True})
       }}
@@ -57,9 +57,9 @@
       state: link
   loop: >-
       {{
-        lookup('fileglob', '{{ playbook_dir }}/.dotfiles/{{ dotfiles_path }}/*', wantlist=True)
+        lookup('fileglob', '{{ playbook_dir }}/dotfiles/{{ dotfiles_path }}/*', wantlist=True)
         +
-        lookup('fileglob', '{{ playbook_dir }}/.dotfiles/{{ dotfiles_path }}/.*', wantlist=True)
+        lookup('fileglob', '{{ playbook_dir }}/dotfiles/{{ dotfiles_path }}/.*', wantlist=True)
         +
         q('subelements', config_dir.results, 'files', {'skip_missing': True})
       }}

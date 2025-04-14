@@ -62,7 +62,7 @@
 
 - name: Installing browser personal config
   ansible.builtin.file:
-      src: '{{ playbook_dir }}/.personal/zen'
+      src: '{{ playbook_dir }}/personal/zen'
       dest: '{{ HOME_DIR }}/.zen'
       state: link
       force: true
