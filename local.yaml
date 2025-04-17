@@ -10,9 +10,9 @@
       DOTFILES_CACHE_DIR: '{{ playbook_dir }}/__cache__'
       GTK_THEME: 'Colloid-Purple-Dark-Compact-Catppuccin'
   pre_tasks:
-      - import_tasks: ./tasks/directory.yaml
-      - import_tasks: ./tasks/personal.yaml
-      - import_tasks: ./tasks/tools.yaml
+      - import_tasks: ./pre_tasks/directory.yaml
+      - import_tasks: ./pre_tasks/personal.yaml
+      - import_tasks: ./pre_tasks/tools.yaml
   tasks:
       - name: Preparing to install common dotfiles
         ansible.builtin.include_tasks: ./tasks/dotfiles.yaml

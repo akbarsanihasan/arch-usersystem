@@ -7,63 +7,63 @@ clear
 ANSIBLE_VERSION='11.1.0'
 ANSIBLE_ARGS=(--ask-become)
 if [[ "$#" -gt 0 ]]; then
-    ANSIBLE_ARGS+=(--tags "tools,directory")
+	ANSIBLE_ARGS+=(--tags "tools,directory")
 else
-    ANSIBLE_ARGS+=(--ask-vault-password)
+	ANSIBLE_ARGS+=(--ask-vault-password)
 fi
 if ! ls /sys/class/power_supply/BAT* &>/dev/null; then
-    ANSIBLE_ARGS+=(--skip-tags "tlp")
+	ANSIBLE_ARGS+=(--skip-tags "tlp")
 fi
 
 if ! [[ -f /etc/ld.so.conf.d/libc.conf ]]; then
-    echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/libc.conf &>/dev/null
-    sudo ldconfig
+	echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/libc.conf &>/dev/null
+	sudo ldconfig
 fi
 
 if ! [[ -f /usr/lib/systemd/system/pacman-update.service ]]; then
-    echo -e "[Unit]" | sudo tee /usr/lib/systemd/system/pacman-update.service
-    echo -e "Description=Update pacman database on boot" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
-    echo -e "After=network-online.target" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
-    echo -e "Wants=network-online.target\n" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "[Unit]" | sudo tee /usr/lib/systemd/system/pacman-update.service
+	echo -e "Description=Update pacman database on boot" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "After=network-online.target" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "Wants=network-online.target\n" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
 
-    echo -e "[Service]" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
-    echo -e "Type=simple" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
-    echo -e "ExecStart=/usr/bin/pacman -Sy" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
-    echo -e "StandardOutput=journal\n" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "[Service]" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "Type=simple" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "ExecStart=/usr/bin/pacman -Sy" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "StandardOutput=journal\n" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
 
-    echo -e "[Install]" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
-    echo -e "WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "[Install]" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
+	echo -e "WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/pacman-update.service
 
-    sudo systemctl daemon-reload
-    sudo systemctl enable pacman-update
+	sudo systemctl daemon-reload
+	sudo systemctl enable pacman-update
 fi
 
 if ! command -v git &>/dev/null; then
-    sudo pacman -S git --noconfirm
+	sudo pacman -S git --noconfirm
 fi
 
 if ! command -v ssh &>/dev/null; then
-    sudo pacman -S openssh --noconfirm
+	sudo pacman -S openssh --noconfirm
 fi
 
 if ! command -v python &>/dev/null; then
-    sudo pacman -S python --noconfirm
+	sudo pacman -S python --noconfirm
 fi
 
 if ! [[ -d ./.pip ]]; then
-    python -m venv .pip
+	python -m venv .pip
 fi
 
 . ./.pip/bin/activate
 
 if ! command -v ansible >/dev/null; then
-    pip install ansible==$ANSIBLE_VERSION
+	pip install ansible==$ANSIBLE_VERSION
 fi
 
 clear
 ansible-playbook local.yaml "${ANSIBLE_ARGS[@]}" "${@}"
 
 if [[ -d .git ]]; then
-    git remote remove origin &>/dev/null
-    git remote add origin git@github.com:akbarsanihasan/arch-usersystem.git &>/dev/null
+	git remote remove origin &>/dev/null
+	git remote add origin git@github.com:akbarsanihasan/arch-usersystem.git &>/dev/null
 fi
