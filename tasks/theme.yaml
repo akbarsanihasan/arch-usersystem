@@ -21,7 +21,7 @@
           - ttf-liberation
   tags: theme
 
-- name: Downloading hyprwm additional package source
+- name: Downloading theme source
   ansible.builtin.git:
       repo: 'https://github.com/{{ item.repo }}.git'
       dest: '{{ DOTFILES_CACHE_DIR }}/{{ item.dest }}'

@@ -3,7 +3,7 @@
   community.general.pacman:
       update_cache: true
       state: present
-      name: [glab, github-cli]
+      name: [git-lfs, glab, github-cli]
   tags: git
 
 - name: Configuring git global config
