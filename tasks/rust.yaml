@@ -10,7 +10,7 @@
 
 - name: Configuring rust environment
   ansible.builtin.blockinfile:
-      path: '{{ HOME_DIR }}/.zshrc'
+      path: '{{ HOME_DIR }}/{{ item }}'
       prepend_newline: true
       marker: '# {mark} rust'
       block: |

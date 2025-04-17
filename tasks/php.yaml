@@ -23,7 +23,7 @@
 
 - name: Configuring php environment
   ansible.builtin.blockinfile:
-      path: '{{ HOME_DIR }}/.zshrc'
+      path: '{{ HOME_DIR }}/{{ item }}'
       prepend_newline: true
       marker: '# {mark} php'
       block: |
